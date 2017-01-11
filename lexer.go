@@ -90,6 +90,8 @@ const (
 	Alert
 	// SetIndex is the 'setindex' keyword
 	SetIndex
+	// Execute is the 'execute' keyword
+	Execute
 	// TODO: lots are missing and will currently be picked up as VARIABLE probably.
 	// Doesn't matter until/unless we try to parse
 
@@ -484,6 +486,8 @@ func (s *Lexer) scanIdentifier() (tok Token, lit string) {
 		return Alert, buf.String()
 	case "SETINDEX":
 		return SetIndex, buf.String()
+	case "EXECUTE":
+		return Execute, buf.String()
 
 	case "NOT":
 		return Not, buf.String()
