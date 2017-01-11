@@ -97,6 +97,8 @@ const (
 	If
 	// Else is the 'else' keyword
 	Else
+	// ElseIf is the 'elseif' keyword
+	ElseIf
 	// EndIf is the 'endif' keyword
 	EndIf
 	// While is the 'while' keyword
@@ -490,6 +492,8 @@ func (s *Lexer) scanIdentifier() (tok Token, lit string) {
 		return If, buf.String()
 	case "ELSE":
 		return Else, buf.String()
+	case "ELSEIF":
+		return ElseIf, buf.String()
 	case "ENDIF":
 		return EndIf, buf.String()
 	case "WHILE":
