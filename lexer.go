@@ -92,8 +92,41 @@ const (
 	SetIndex
 	// Execute is the 'execute' keyword
 	Execute
-	// TODO: lots are missing and will currently be picked up as VARIABLE probably.
-	// Doesn't matter until/unless we try to parse
+	// MethodSwap is the 'methodswap' keyword
+	MethodSwap
+	// Process is the 'process' keyword
+	Process
+	// FormSwap is the 'formswap' keyword
+	FormSwap
+	// Form is the 'form' keyword
+	Form
+	// OptimiseDatabase is the 'optimisedatabase' keyword
+	OptimiseDatabase
+	// Command is the 'command' keyword
+	Command
+	// Task is the 'task' keyword
+	Task
+	// Shell is the 'shell' keyword
+	Shell
+	// Export is the 'export' keyword
+	Export
+	// Import is the 'import' keyword
+	Import
+	// EmptyDatabase is the 'emptydatabase' keyword
+	EmptyDatabase
+	// Query is the 'query' keyword
+	Query
+	// ReportView is the 'reportview' keyword
+	ReportView
+	// Report is the 'report' keyword
+	Report
+	// System is the 'system' keyword
+	System
+
+	// Public is the 'public' keyword
+	Public
+	// Procedure is the 'procedure' keyword
+	Procedure
 
 	// If is the 'if' keyword
 	If
@@ -168,6 +201,9 @@ const (
 
 	// SysError is the 'syserror' keyword
 	SysError
+
+	// TODO: lots are missing and will currently be picked up as VARIABLE probably.
+	// Doesn't matter until/unless we try to parse
 )
 
 // Lexer is a lexical analyser of Equinox source code.
@@ -488,6 +524,41 @@ func (s *Lexer) scanIdentifier() (tok Token, lit string) {
 		return SetIndex, buf.String()
 	case "EXECUTE":
 		return Execute, buf.String()
+	case "METHODSWAP":
+		return MethodSwap, buf.String()
+	case "PROCESS":
+		return Process, buf.String()
+	case "FORMSWAP":
+		return FormSwap, buf.String()
+	case "FORM":
+		return Form, buf.String()
+	case "OPTIMISEDATABASE":
+		return OptimiseDatabase, buf.String()
+	case "COMMAND":
+		return Command, buf.String()
+	case "TASK":
+		return Task, buf.String()
+	case "SHELL":
+		return Shell, buf.String()
+	case "EXPORT":
+		return Export, buf.String()
+	case "IMPORT":
+		return Import, buf.String()
+	case "EMPTYDATABASE":
+		return EmptyDatabase, buf.String()
+	case "QUERY":
+		return Query, buf.String()
+	case "REPORTVIEW":
+		return ReportView, buf.String()
+	case "REPORT":
+		return Report, buf.String()
+	case "SYSTEM":
+		return System, buf.String()
+
+	case "PUBLIC":
+		return Public, buf.String()
+	case "PROCEDURE":
+		return Procedure, buf.String()
 
 	case "NOT":
 		return Not, buf.String()
