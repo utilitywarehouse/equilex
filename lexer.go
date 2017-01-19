@@ -116,8 +116,8 @@ const (
 	EmptyDatabase
 	// Query is the 'query' keyword
 	Query
-	// ReportView is the 'reportview' keyword
-	ReportView
+	// ReportPreview is the 'reportpreview' keyword
+	ReportPreview
 	// Report is the 'report' keyword
 	Report
 	// System is the 'system' keyword
@@ -548,8 +548,8 @@ func (s *Lexer) scanIdentifier() (tok Token, lit string) {
 		return EmptyDatabase, buf.String()
 	case "QUERY":
 		return Query, buf.String()
-	case "REPORTVIEW":
-		return ReportView, buf.String()
+	case "REPORTPREVIEW":
+		return ReportPreview, buf.String()
 	case "REPORT":
 		return Report, buf.String()
 	case "SYSTEM":
