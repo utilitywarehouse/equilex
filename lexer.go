@@ -217,7 +217,7 @@ func NewLexer(r io.Reader) *Lexer {
 }
 
 // Scan returns the next Token and corresponding string literal
-func (s *Lexer) Scan() (tok Token, lit string) {
+func (s *Lexer) Scan() (tok Token, lit string, err error) {
 
 	ch := s.read()
 
@@ -249,51 +249,51 @@ func (s *Lexer) Scan() (tok Token, lit string) {
 
 	switch ch {
 	case eof:
-		return EOF, ""
+		return EOF, "", nil
 	case ',':
-		return Comma, string(ch)
+		return Comma, string(ch), nil
 	case '=':
-		return Equals, string(ch)
+		return Equals, string(ch), nil
 	case '(':
-		return LeftParen, string(ch)
+		return LeftParen, string(ch), nil
 	case ')':
-		return RightParen, string(ch)
+		return RightParen, string(ch), nil
 	case '[':
-		return LeftSquare, string(ch)
+		return LeftSquare, string(ch), nil
 	case ']':
-		return RightSquare, string(ch)
+		return RightSquare, string(ch), nil
 	case '<':
-		return LeftAngle, string(ch)
+		return LeftAngle, string(ch), nil
 	case '>':
-		return RightAngle, string(ch)
+		return RightAngle, string(ch), nil
 	case '+':
-		return Plus, string(ch)
+		return Plus, string(ch), nil
 	case '-':
-		return Minus, string(ch)
+		return Minus, string(ch), nil
 	case '*':
-		return Multiply, string(ch)
+		return Multiply, string(ch), nil
 	case '/':
-		return Divide, string(ch)
+		return Divide, string(ch), nil
 	case '^':
-		return Power, string(ch)
+		return Power, string(ch), nil
 
 	case '&':
-		return Ampersand, string(ch)
+		return Ampersand, string(ch), nil
 
 	case '.':
-		return Dot, string(ch)
+		return Dot, string(ch), nil
 
 	case ';':
-		return Semicolon, string(ch)
+		return Semicolon, string(ch), nil
 
 	case '\\':
-		return Backslash, string(ch)
+		return Backslash, string(ch), nil
 	}
 
-	return Illegal, string(ch)
+	return Illegal, string(ch), nil
 }
 
-func (s *Lexer) scanWhitespace() (tok Token, lit string) {
+func (s *Lexer) scanWhitespace() (tok Token, lit string, err error) {
 	var buf bytes.Buffer
 	buf.WriteRune(s.read())
 
@@ -308,10 +308,10 @@ func (s *Lexer) scanWhitespace() (tok Token, lit string) {
 		}
 	}
 
-	return WS, buf.String()
+	return WS, buf.String(), nil
 }
 
-func (s *Lexer) scanSingleQuotedLiteral() (tok Token, lit string) {
+func (s *Lexer) scanSingleQuotedLiteral() (tok Token, lit string, err error) {
 	var buf bytes.Buffer
 	buf.WriteRune(s.read())
 
@@ -334,7 +334,7 @@ func (s *Lexer) scanSingleQuotedLiteral() (tok Token, lit string) {
 		switch ch {
 		case '\'':
 			buf.WriteRune(ch)
-			return DateOrTimeConstant, buf.String()
+			return DateOrTimeConstant, buf.String(), nil
 		case '\n':
 			log.Panicf("unclosed single quote. (TODO: deal with this better)\nbuffer is '%v' and next char is `%v`\n", buf.String(), ch)
 		default:
@@ -344,7 +344,7 @@ func (s *Lexer) scanSingleQuotedLiteral() (tok Token, lit string) {
 
 }
 
-func (s *Lexer) scanDoubleQuotedLiteral() (tok Token, lit string) {
+func (s *Lexer) scanDoubleQuotedLiteral() (tok Token, lit string, err error) {
 	var buf bytes.Buffer
 	buf.WriteRune(s.read())
 
@@ -353,7 +353,7 @@ func (s *Lexer) scanDoubleQuotedLiteral() (tok Token, lit string) {
 		switch ch {
 		case '"':
 			buf.WriteRune(ch)
-			return StringConstant, buf.String()
+			return StringConstant, buf.String(), nil
 		case '\n':
 			log.Panicf("unclosed double quote. (TODO: deal with this better)\nbuffer is '%v' and next char is `%v`\n", buf.String(), ch)
 		default:
@@ -363,7 +363,7 @@ func (s *Lexer) scanDoubleQuotedLiteral() (tok Token, lit string) {
 
 }
 
-func (s *Lexer) scanDollarQuotedLiteral() (tok Token, lit string) {
+func (s *Lexer) scanDollarQuotedLiteral() (tok Token, lit string, err error) {
 	var buf bytes.Buffer
 	buf.WriteRune(s.read())
 
@@ -372,7 +372,7 @@ func (s *Lexer) scanDollarQuotedLiteral() (tok Token, lit string) {
 		switch ch {
 		case '$':
 			buf.WriteRune(ch)
-			return StringMultilineConstant, buf.String()
+			return StringMultilineConstant, buf.String(), nil
 		case eof:
 			log.Panicf("unclosed double quote. (TODO: deal with this better)\nbuffer is '%v' and next char is `%v`\n", buf.String(), ch)
 		default:
@@ -382,10 +382,10 @@ func (s *Lexer) scanDollarQuotedLiteral() (tok Token, lit string) {
 
 }
 
-func (s *Lexer) scanComment() (tok Token, lit string) {
+func (s *Lexer) scanComment() (tok Token, lit string, err error) {
 	peeked, err := s.r.Peek(2)
 	if err != nil {
-		panic(err)
+		return Illegal, "", err
 	}
 
 	if bytes.Equal([]byte("|*"), peeked) {
@@ -394,7 +394,7 @@ func (s *Lexer) scanComment() (tok Token, lit string) {
 	return s.scanSingleLineComment()
 }
 
-func (s *Lexer) scanSingleLineComment() (tok Token, lit string) {
+func (s *Lexer) scanSingleLineComment() (tok Token, lit string, err error) {
 	var buf bytes.Buffer
 	buf.WriteRune(s.read())
 
@@ -404,9 +404,9 @@ func (s *Lexer) scanSingleLineComment() (tok Token, lit string) {
 		switch ch {
 		case '\n':
 			s.unread()
-			return Comment, buf.String()
+			return Comment, buf.String(), nil
 		case eof:
-			return Comment, buf.String()
+			return Comment, buf.String(), nil
 		default:
 			buf.WriteRune(ch)
 		}
@@ -414,14 +414,14 @@ func (s *Lexer) scanSingleLineComment() (tok Token, lit string) {
 	}
 }
 
-func (s *Lexer) scanStandardComment() (tok Token, lit string) {
+func (s *Lexer) scanStandardComment() (tok Token, lit string, err error) {
 	var buf bytes.Buffer
 	buf.WriteRune(s.read())
 
 	nest := 0
 	for {
 		if ch := s.read(); ch == eof {
-			panic(fmt.Sprintf("truncated file?:\n\n%v\n\n", string(buf.Bytes())))
+			return Illegal, "", fmt.Errorf("truncated file?:\n\n%v\n\n", string(buf.Bytes()))
 		} else if ch == '|' && peek1(s.r) == '*' {
 			buf.WriteRune(ch)
 			nest++
@@ -439,10 +439,10 @@ func (s *Lexer) scanStandardComment() (tok Token, lit string) {
 		}
 	}
 
-	return Comment, buf.String()
+	return Comment, buf.String(), nil
 }
 
-func (s *Lexer) scanNewline() (tok Token, lit string) {
+func (s *Lexer) scanNewline() (tok Token, lit string, err error) {
 	var buf bytes.Buffer
 	buf.WriteRune(s.read())
 
@@ -457,10 +457,10 @@ func (s *Lexer) scanNewline() (tok Token, lit string) {
 		buf.WriteRune(ch)
 	}
 
-	return NewLine, buf.String()
+	return NewLine, buf.String(), nil
 }
 
-func (s *Lexer) scanNumber() (tok Token, lit string) {
+func (s *Lexer) scanNumber() (tok Token, lit string, err error) {
 	var buf bytes.Buffer
 	buf.WriteRune(s.read())
 
@@ -480,12 +480,12 @@ func (s *Lexer) scanNumber() (tok Token, lit string) {
 			buf.WriteRune(ch)
 		default:
 			s.unread()
-			return token, buf.String()
+			return token, buf.String(), nil
 		}
 	}
 }
 
-func (s *Lexer) scanIdentifier() (tok Token, lit string) {
+func (s *Lexer) scanIdentifier() (tok Token, lit string, err error) {
 	var buf bytes.Buffer
 	buf.WriteRune(s.read())
 
@@ -503,127 +503,127 @@ func (s *Lexer) scanIdentifier() (tok Token, lit string) {
 	// Keywords
 	switch strings.ToUpper(buf.String()) {
 	case "SUBTABLE":
-		return Subtable, buf.String()
+		return Subtable, buf.String(), nil
 	case "FINDRECORD":
-		return FindRecord, buf.String()
+		return FindRecord, buf.String(), nil
 	case "FILEOPEN":
-		return FileOpen, buf.String()
+		return FileOpen, buf.String(), nil
 	case "FILEPRINT":
-		return FilePrint, buf.String()
+		return FilePrint, buf.String(), nil
 	case "FIRSTRECORD":
-		return FirstRecord, buf.String()
+		return FirstRecord, buf.String(), nil
 	case "METHOD":
-		return Method, buf.String()
+		return Method, buf.String(), nil
 	case "TEXT":
-		return Text, buf.String()
+		return Text, buf.String(), nil
 	case "LOOKUP":
-		return Lookup, buf.String()
+		return Lookup, buf.String(), nil
 	case "ALERT":
-		return Alert, buf.String()
+		return Alert, buf.String(), nil
 	case "SETINDEX":
-		return SetIndex, buf.String()
+		return SetIndex, buf.String(), nil
 	case "EXECUTE":
-		return Execute, buf.String()
+		return Execute, buf.String(), nil
 	case "METHODSWAP":
-		return MethodSwap, buf.String()
+		return MethodSwap, buf.String(), nil
 	case "PROCESS":
-		return Process, buf.String()
+		return Process, buf.String(), nil
 	case "FORMSWAP":
-		return FormSwap, buf.String()
+		return FormSwap, buf.String(), nil
 	case "FORM":
-		return Form, buf.String()
+		return Form, buf.String(), nil
 	case "OPTIMISEDATABASE":
-		return OptimiseDatabase, buf.String()
+		return OptimiseDatabase, buf.String(), nil
 	case "COMMAND":
-		return Command, buf.String()
+		return Command, buf.String(), nil
 	case "TASK":
-		return Task, buf.String()
+		return Task, buf.String(), nil
 	case "SHELL":
-		return Shell, buf.String()
+		return Shell, buf.String(), nil
 	case "EXPORT":
-		return Export, buf.String()
+		return Export, buf.String(), nil
 	case "IMPORT":
-		return Import, buf.String()
+		return Import, buf.String(), nil
 	case "EMPTYDATABASE":
-		return EmptyDatabase, buf.String()
+		return EmptyDatabase, buf.String(), nil
 	case "QUERY":
-		return Query, buf.String()
+		return Query, buf.String(), nil
 	case "REPORTPREVIEW":
-		return ReportPreview, buf.String()
+		return ReportPreview, buf.String(), nil
 	case "REPORT":
-		return Report, buf.String()
+		return Report, buf.String(), nil
 	case "SYSTEM":
-		return System, buf.String()
+		return System, buf.String(), nil
 
 	case "PUBLIC":
-		return Public, buf.String()
+		return Public, buf.String(), nil
 	case "PROCEDURE":
-		return Procedure, buf.String()
+		return Procedure, buf.String(), nil
 
 	case "NOT":
-		return Not, buf.String()
+		return Not, buf.String(), nil
 
 	case "IF":
-		return If, buf.String()
+		return If, buf.String(), nil
 	case "ELSE":
-		return Else, buf.String()
+		return Else, buf.String(), nil
 	case "ELSEIF":
-		return ElseIf, buf.String()
+		return ElseIf, buf.String(), nil
 	case "ENDIF":
-		return EndIf, buf.String()
+		return EndIf, buf.String(), nil
 	case "WHILE":
-		return While, buf.String()
+		return While, buf.String(), nil
 	case "END":
-		return End, buf.String()
+		return End, buf.String(), nil
 	case "REPEAT":
-		return Repeat, buf.String()
+		return Repeat, buf.String(), nil
 	case "UNTIL":
-		return Until, buf.String()
+		return Until, buf.String(), nil
 	case "FOR":
-		return For, buf.String()
+		return For, buf.String(), nil
 	case "NEXT":
-		return Next, buf.String()
+		return Next, buf.String(), nil
 	case "STEP":
-		return Step, buf.String()
+		return Step, buf.String(), nil
 	case "THEN":
-		return Then, buf.String()
+		return Then, buf.String(), nil
 
 	case "BLOCK":
-		return Block, buf.String()
+		return Block, buf.String(), nil
 	case "SWITCH":
-		return Switch, buf.String()
+		return Switch, buf.String(), nil
 	case "CASE":
-		return Case, buf.String()
+		return Case, buf.String(), nil
 
 	case "AND":
-		return And, buf.String()
+		return And, buf.String(), nil
 	case "OR":
-		return Or, buf.String()
+		return Or, buf.String(), nil
 	case "XOR":
-		return Xor, buf.String()
+		return Xor, buf.String(), nil
 
 	case "STRING":
-		return String, buf.String()
+		return String, buf.String(), nil
 	case "LOGICAL":
-		return Logical, buf.String()
+		return Logical, buf.String(), nil
 	case "DATE":
-		return Date, buf.String()
+		return Date, buf.String(), nil
 	case "NUMBER":
-		return Number, buf.String()
+		return Number, buf.String(), nil
 
 	case "TRUE":
-		return True, buf.String()
+		return True, buf.String(), nil
 	case "FALSE":
-		return False, buf.String()
+		return False, buf.String(), nil
 
 	case "TODAY":
-		return Today, buf.String()
+		return Today, buf.String(), nil
 
 	case "SYSERROR":
-		return SysError, buf.String()
+		return SysError, buf.String(), nil
 	}
 
-	return Identifier, buf.String()
+	return Identifier, buf.String(), nil
 }
 
 func (s *Lexer) read() rune {
