@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"log"
 	"strings"
 )
 
@@ -328,7 +327,7 @@ func (s *Lexer) scanSingleQuotedLiteral() (tok Token, lit string, err error) {
 		}
 
 		if isDate && isTime {
-			log.Panicf("malformed date or time '%v' next char is '%v'\n", buf.String(), ch)
+			return Illegal, "", fmt.Errorf("malformed date or time '%v' next char is '%v'\n", buf.String(), ch)
 		}
 
 		switch ch {
@@ -336,7 +335,7 @@ func (s *Lexer) scanSingleQuotedLiteral() (tok Token, lit string, err error) {
 			buf.WriteRune(ch)
 			return DateOrTimeConstant, buf.String(), nil
 		case '\n':
-			log.Panicf("unclosed single quote. (TODO: deal with this better)\nbuffer is '%v' and next char is `%v`\n", buf.String(), ch)
+			return Illegal, "", fmt.Errorf("unclosed single quote. (TODO: deal with this better)\nbuffer is '%v' and next char is `%v`\n", buf.String(), ch)
 		default:
 			buf.WriteRune(ch)
 		}
@@ -355,7 +354,7 @@ func (s *Lexer) scanDoubleQuotedLiteral() (tok Token, lit string, err error) {
 			buf.WriteRune(ch)
 			return StringConstant, buf.String(), nil
 		case '\n':
-			log.Panicf("unclosed double quote. (TODO: deal with this better)\nbuffer is '%v' and next char is `%v`\n", buf.String(), ch)
+			return Illegal, "", fmt.Errorf("unclosed double quote. (TODO: deal with this better)\nbuffer is '%v' and next char is `%v`\n", buf.String(), ch)
 		default:
 			buf.WriteRune(ch)
 		}
@@ -374,7 +373,7 @@ func (s *Lexer) scanDollarQuotedLiteral() (tok Token, lit string, err error) {
 			buf.WriteRune(ch)
 			return StringMultilineConstant, buf.String(), nil
 		case eof:
-			log.Panicf("unclosed double quote. (TODO: deal with this better)\nbuffer is '%v' and next char is `%v`\n", buf.String(), ch)
+			return Illegal, "", fmt.Errorf("unclosed double quote. (TODO: deal with this better)\nbuffer is '%v' and next char is `%v`\n", buf.String(), ch)
 		default:
 			buf.WriteRune(ch)
 		}
@@ -474,7 +473,7 @@ func (s *Lexer) scanNumber() (tok Token, lit string, err error) {
 			if token == IntegerConstant {
 				token = DecimalConstant
 			} else {
-				log.Panicf("malformed number? : '%s' with next char '%v'", buf.String(), ch)
+				return Illegal, "", fmt.Errorf("malformed number? : '%s' with next char '%v'", buf.String(), string(ch))
 			}
 		case isDigit(ch):
 			buf.WriteRune(ch)
