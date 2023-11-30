@@ -76,7 +76,10 @@ func findComments(input string) (comments []string) {
 	comments = []string{}
 
 	for {
-		token, literal := l.Scan()
+		token, literal, err := l.Scan()
+		if err != nil {
+			panic(err)
+		}
 		switch token {
 		case EOF:
 			return
