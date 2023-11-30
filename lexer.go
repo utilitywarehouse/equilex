@@ -217,7 +217,6 @@ func NewLexer(r io.Reader) *Lexer {
 
 // Scan returns the next Token and corresponding string literal
 func (s *Lexer) Scan() (tok Token, lit string, err error) {
-
 	ch := s.read()
 
 	if isWhitespace(ch) {
@@ -340,7 +339,6 @@ func (s *Lexer) scanSingleQuotedLiteral() (tok Token, lit string, err error) {
 			buf.WriteRune(ch)
 		}
 	}
-
 }
 
 func (s *Lexer) scanDoubleQuotedLiteral() (tok Token, lit string, err error) {
@@ -359,7 +357,6 @@ func (s *Lexer) scanDoubleQuotedLiteral() (tok Token, lit string, err error) {
 			buf.WriteRune(ch)
 		}
 	}
-
 }
 
 func (s *Lexer) scanDollarQuotedLiteral() (tok Token, lit string, err error) {
@@ -378,7 +375,6 @@ func (s *Lexer) scanDollarQuotedLiteral() (tok Token, lit string, err error) {
 			buf.WriteRune(ch)
 		}
 	}
-
 }
 
 func (s *Lexer) scanComment() (tok Token, lit string, err error) {

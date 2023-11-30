@@ -1,9 +1,10 @@
 package equilex
 
 import (
-	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestStandardComment(t *testing.T) {
@@ -28,7 +29,6 @@ func TestEOLComment(t *testing.T) {
 
 	c := `	foo bar	| comment 2  ` // no EOL before EOF
 	assert.Equal([]string{"| comment 2  "}, findComments(c))
-
 }
 
 func TestEOLCommentEOF(t *testing.T) {
@@ -37,7 +37,6 @@ func TestEOLCommentEOF(t *testing.T) {
 	c := `	foo bar	| comment 2  
 `
 	assert.Equal([]string{"| comment 2  "}, findComments(c))
-
 }
 
 func TestCommentInsideString(t *testing.T) {
@@ -47,7 +46,6 @@ func TestCommentInsideString(t *testing.T) {
 	foo bar	" | not a comment"  
 `
 	assert.Equal([]string{}, findComments(c))
-
 }
 
 func TestNoComments(t *testing.T) {
@@ -57,7 +55,6 @@ func TestNoComments(t *testing.T) {
 	foo bar	  
 `
 	assert.Equal([]string{}, findComments(c))
-
 }
 
 func TestCommentDoesntEndImmediately(t *testing.T) {
@@ -67,7 +64,6 @@ func TestCommentDoesntEndImmediately(t *testing.T) {
 	foo bar |*| baz *| banana
 `
 	assert.Equal([]string{"|*| baz *|"}, findComments(c))
-
 }
 
 func findComments(input string) (comments []string) {
