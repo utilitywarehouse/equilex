@@ -101,6 +101,8 @@ const (
 	Form
 	// OptimiseDatabase is the 'optimisedatabase' keyword
 	OptimiseDatabase
+	// OptimiseDatabaseIndexes is the 'optimisedatabaseindexes' keyword
+	OptimiseDatabaseIndexes
 	// Command is the 'command' keyword
 	Command
 	// Task is the 'task' keyword
@@ -529,6 +531,8 @@ func (s *Lexer) scanIdentifier() (tok Token, lit string, err error) {
 		return Form, buf.String(), nil
 	case "OPTIMISEDATABASE":
 		return OptimiseDatabase, buf.String(), nil
+	case "OPTIMISEDATABASEINDEXES":
+		return OptimiseDatabaseIndexes, buf.String(), nil
 	case "COMMAND":
 		return Command, buf.String(), nil
 	case "TASK":
