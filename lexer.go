@@ -93,16 +93,30 @@ const (
 	Execute
 	// MethodSwap is the 'methodswap' keyword
 	MethodSwap
+	// MethodSetup is the 'methodsetup' keyword
+	MethodSetup
 	// Process is the 'process' keyword
 	Process
 	// FormSwap is the 'formswap' keyword
 	FormSwap
 	// Form is the 'form' keyword
 	Form
+	// OptimiseTable is the 'optimisetable' keyword
+	OptimiseTable
+	// OptimiseTableIndexes is the 'optimisetableindexes' keyword
+	OptimiseTableIndexes
 	// OptimiseDatabase is the 'optimisedatabase' keyword
 	OptimiseDatabase
 	// OptimiseDatabaseIndexes is the 'optimisedatabaseindexes' keyword
 	OptimiseDatabaseIndexes
+	// OptimiseAllDatabases is the 'optimisealldatabases' keyword
+	OptimiseAllDatabases
+	// OptimiseAllDatabasesIndexes is the 'optimisealldatabasesindexes' keyword
+	OptimiseAllDatabasesIndexes
+	// OptimiseDatabaseHelper is the 'optimisedatabasehelper' keyword
+	OptimiseDatabaseHelper
+	// ConvertAllDatabases is the 'convertalldatabases' keyword.
+	ConvertAllDatabases
 	// Command is the 'command' keyword
 	Command
 	// Task is the 'task' keyword
@@ -523,16 +537,30 @@ func (s *Lexer) scanIdentifier() (tok Token, lit string, err error) {
 		return Execute, buf.String(), nil
 	case "METHODSWAP":
 		return MethodSwap, buf.String(), nil
+	case "METHODSETUP":
+		return MethodSetup, buf.String(), nil
 	case "PROCESS":
 		return Process, buf.String(), nil
 	case "FORMSWAP":
 		return FormSwap, buf.String(), nil
 	case "FORM":
 		return Form, buf.String(), nil
+	case "OPTIMISETABLE":
+		return OptimiseTable, buf.String(), nil
+	case "OPTIMISETABLEINDEXES":
+		return OptimiseTableIndexes, buf.String(), nil
 	case "OPTIMISEDATABASE":
 		return OptimiseDatabase, buf.String(), nil
 	case "OPTIMISEDATABASEINDEXES":
 		return OptimiseDatabaseIndexes, buf.String(), nil
+	case "OPTIMISEALLDATABASES":
+		return OptimiseAllDatabases, buf.String(), nil
+	case "OPTIMISEALLDATABASESINDEXES":
+		return OptimiseAllDatabasesIndexes, buf.String(), nil
+	case "OPTIMISEDATABASEHELPER":
+		return OptimiseDatabase, buf.String(), nil
+	case "CONVERTALLDATABASES":
+		return ConvertAllDatabases, buf.String(), nil
 	case "COMMAND":
 		return Command, buf.String(), nil
 	case "TASK":
