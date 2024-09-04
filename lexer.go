@@ -142,6 +142,8 @@ const (
 	Public
 	// Procedure is the 'procedure' keyword
 	Procedure
+	// External is the 'procedure' keyword
+	External
 
 	// If is the 'if' keyword
 	If
@@ -586,6 +588,8 @@ func (s *Lexer) scanIdentifier() (tok Token, lit string, err error) {
 		return Public, buf.String(), nil
 	case "PROCEDURE":
 		return Procedure, buf.String(), nil
+	case "EXTERNAL":
+		return External, buf.String(), nil
 
 	case "NOT":
 		return Not, buf.String(), nil
